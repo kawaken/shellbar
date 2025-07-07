@@ -1,0 +1,47 @@
+# Shellbar設定ファイル
+# ~/.config/shellbar/shellbar.toml または ./shellbar.toml
+
+# ステータスバーのフォーマット文字列
+format = "{path} {git_branch} {git_changes} | {datetime}"
+
+# ステータスバーの更新間隔（最小値）
+refresh_rate = "500ms"
+
+# デフォルト設定（各コマンドで上書き可能）
+[defaults]
+# コマンドのタイムアウト時間
+timeout = "3s"
+# コマンドの実行間隔
+interval = "2s"
+
+# 現在のパス表示
+[commands.path]
+command = "pwd | sed 's|$HOME|~|'"
+interval = "5s"
+
+# Gitブランチ名とステータス
+[commands.git_branch]
+command = "git branch --show-current 2>/dev/null || echo ''"
+interval = "3s"
+
+# Git変更ファイル数（ステージ済み+未ステージ）
+[commands.git_changes]
+command = """
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  staged=$(git diff --cached --name-only | wc -l | tr -d ' ')
+  unstaged=$(git diff --name-only | wc -l | tr -d ' ')
+  if [ "$staged" -gt 0 ] || [ "$unstaged" -gt 0 ]; then
+    echo "+${staged} ~${unstaged}"
+  else
+    echo ""
+  fi
+else
+  echo ""
+fi
+"""
+
+# 現在時刻表示
+[commands.datetime]
+command = "date '+%H:%M:%S'"
+interval = "1s"
+timeout = "500ms"
