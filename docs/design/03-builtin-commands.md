@@ -22,6 +22,7 @@
 - **説明**: 現在のディレクトリの絶対パス
 - **フォーマット**: `$HOME`相当は`~`で表示
 - **実装**: `os.Getwd()` + `os.UserHomeDir()`
+- **内部設定**: interval=5s, timeout=1s
 - **例**: 
   - `/home/user/projects/app` → `~/projects/app`
   - `/var/log` → `/var/log`
@@ -30,18 +31,21 @@
 - **説明**: 現在の日付
 - **フォーマット**: `YYYY-MM-DD`
 - **実装**: `time.Now().Format("2006-01-02")`
+- **内部設定**: interval=5s, timeout=1s
 - **例**: `2024-07-08`
 
 ### 3. time
 - **説明**: 現在の時刻
 - **フォーマット**: `HH:MM:SS`
 - **実装**: `time.Now().Format("15:04:05")`
+- **内部設定**: interval=1s, timeout=1s
 - **例**: `15:30:45`
 
 ### 4. git_branch
 - **説明**: 現在のGitブランチ名
 - **フォーマット**: ブランチ名のみ
 - **実装**: `go-git`ライブラリ
+- **内部設定**: interval=5s, timeout=1s
 - **例**: `main`, `feature/login`
 - **エラー時**: 空文字 or エラーメッセージ
 
