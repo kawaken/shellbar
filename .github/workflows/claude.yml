@@ -44,7 +44,12 @@ jobs:
           
           # Allow Claude to run essential Git and Go commands
           allowed_tools: |
-            Bash(git add*),Bash(git commit*),Bash(git push*),Bash(git status),Bash(git diff*),Bash(go mod*),Bash(go test*),Bash(go build*),Bash(go run*),Bash(go get*)
+            Edit,MultiEdit,Glob,Grep,LS,Read,Write,
+            mcp__github_file_ops__commit_files,
+            mcp__github_file_ops__delete_files,
+            mcp__github_file_ops__update_claude_comment,
+            Bash(git add*),Bash(git commit*),Bash(git push*),Bash(git status),Bash(git diff*),
+            Bash(go mod*),Bash(go test*),Bash(go build*),Bash(go run*),Bash(go get*)
           
           # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
           # model: "claude-opus-4-20250514"
