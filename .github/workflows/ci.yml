@@ -47,11 +47,11 @@ jobs:
       run: staticcheck ./...
 
     - name: Run tests with coverage and race detection
-      run: go test -race -coverprofile=coverage.out -covermode=atomic -v ./...
+      run: go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 
     - name: Check coverage threshold
       run: |
-        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+        COVERAGE=$(go tool cover -func=coverage.txt | grep total | awk '{print $3}' | sed 's/%//')
         echo "Coverage: $COVERAGE%"
         if awk 'BEGIN{exit !('\"$COVERAGE\"' < 80)}'; then
           echo "❌ Coverage $COVERAGE% is below 80% threshold"
@@ -61,12 +61,9 @@ jobs:
         fi
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
-        file: ./coverage.out
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Build
       run: go build -v ./...
