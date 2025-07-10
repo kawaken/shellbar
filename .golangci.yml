@@ -114,8 +114,6 @@ linters-settings:
   lll:
     line-length: 120
     tab-width: 1
-  maligned:
-    suggest-new: true
   misspell:
     locale: US
     ignore-words: []
@@ -176,7 +174,6 @@ linters-settings:
       - name: error-naming
       - name: error-strings
       - name: exported
-      - name: package-comments
       - name: imports-blacklist
       - name: function-result-limit
         arguments: [3]
@@ -274,11 +271,9 @@ linters:
     - interfacer
     - ireturn
     - maintidx
-    - maligned
     - makezero
     - nlreturn
     - noctx
-    - nolintlint
     - paralleltest
     - promlinter
     - rowserrcheck
