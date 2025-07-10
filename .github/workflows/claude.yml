@@ -51,6 +51,9 @@ jobs:
             Bash(git add*),Bash(git commit*),Bash(git push*),Bash(git status),Bash(git diff*),
             Bash(go mod*),Bash(go test*),Bash(go build*),Bash(go run*),Bash(go get*)
           
+          # Use sticky comments to update existing comments instead of creating new ones
+          use_sticky_comment: true
+          
           # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
           # model: "claude-opus-4-20250514"
           
