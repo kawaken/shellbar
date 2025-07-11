@@ -19,10 +19,11 @@ jobs:
             const branchName = pr.head.ref;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+            const defaultBranch = context.payload.repository.default_branch;
             
-            // main ブランチは削除しない
-            if (branchName === 'main') {
-              console.log(`Skipping deletion of protected branch: ${branchName}`);
+            // デフォルトブランチは削除しない
+            if (branchName === defaultBranch) {
+              console.log(`Skipping deletion of default branch: ${branchName}`);
               return;
             }
             
@@ -30,6 +31,25 @@ jobs:
             if (pr.head.repo.full_name !== pr.base.repo.full_name) {
               console.log('PR is from a fork, skipping branch deletion');
               return;
+            }
+            
+            // 保護されたブランチかどうかをチェック
+            try {
+              const protection = await github.rest.repos.getBranchProtection({
+                owner: owner,
+                repo: repo,
+                branch: branchName
+              });
+              
+              if (protection.data) {
+                console.log(`Skipping deletion of protected branch: ${branchName}`);
+                return;
+              }
+            } catch (error) {
+              // 404エラーは保護されていないことを意味するので続行
+              if (error.status !== 404) {
+                console.log(`Warning: Could not check protection status for branch ${branchName}:`, error.message);
+              }
             }
             
             try {
