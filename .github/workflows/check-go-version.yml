@@ -3,7 +3,7 @@ name: Check Go Version
 on:
   schedule:
     # 毎週月曜日の8時15分（UTC）に実行
-    - cron: '15 8 * * 1'
+    - cron: "15 8 * * 1"
   # 手動実行も可能
   workflow_dispatch:
 
@@ -12,66 +12,65 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Get latest stable Go version
+        id: get-latest
+        run: |
+          # Go公式のダウンロードページからバージョン情報を取得
+          LATEST_VERSION=$(curl -s https://go.dev/VERSION?m=text | head -1)
+          echo "Latest Go version: $LATEST_VERSION"
 
-    - name: Get latest stable Go version
-      id: get-latest
-      run: |
-        # Go公式のダウンロードページからバージョン情報を取得
-        LATEST_VERSION=$(curl -s https://go.dev/VERSION?m=text | head -1)
-        echo "Latest Go version: $LATEST_VERSION"
-        
-        # バージョン番号のみを抽出（go1.24.4 -> 1.24）
-        LATEST_MINOR=$(echo $LATEST_VERSION | sed 's/^go//' | cut -d. -f1,2)
-        echo "latest_minor=$LATEST_MINOR" >> $GITHUB_OUTPUT
-        echo "Latest minor version: $LATEST_MINOR"
+          # バージョン番号のみを抽出（go1.24.4 -> 1.24）
+          LATEST_MINOR=$(echo $LATEST_VERSION | sed 's/^go//' | cut -d. -f1,2)
+          echo "latest_minor=$LATEST_MINOR" >> $GITHUB_OUTPUT
+          echo "Latest minor version: $LATEST_MINOR"
 
-    - name: Check if GO_LATEST is up to date
-      run: |
-        # ci.ymlからGO_LATESTの値を取得
-        CURRENT_VERSION=$(grep -m1 "GO_LATEST:" .github/workflows/ci.yml | awk '{print $2}' | sed 's/\.x$//')
-        if [ -z "$CURRENT_VERSION" ]; then
-          echo "::error::GO_LATEST variable not found in ci.yml"
-          exit 1
-        fi
-        echo "Current GO_LATEST: $CURRENT_VERSION"
+      - name: Check if GO_LATEST is up to date
+        run: |
+          # ci.ymlからGO_LATESTの値を取得
+          CURRENT_VERSION=$(grep -m1 "GO_LATEST:" .github/workflows/ci.yml | awk '{print $2}' | sed 's/\.x$//')
+          if [ -z "$CURRENT_VERSION" ]; then
+            echo "::error::GO_LATEST variable not found in ci.yml"
+            exit 1
+          fi
+          echo "Current GO_LATEST: $CURRENT_VERSION"
 
-        LATEST_MINOR="${{ steps.get-latest.outputs.latest_minor }}"
-        echo "Latest Go minor: $LATEST_MINOR"
+          LATEST_MINOR="${{ steps.get-latest.outputs.latest_minor }}"
+          echo "Latest Go minor: $LATEST_MINOR"
 
-        # バージョンを比較
-        if [ "$CURRENT_VERSION" != "$LATEST_MINOR" ]; then
-          echo "::error::GO_LATEST ($CURRENT_VERSION.x) is outdated! Latest stable Go version is $LATEST_MINOR.x"
-          echo "Please update GO_LATEST in .github/workflows/ci.yml to $LATEST_MINOR.x"
-          exit 1
-        fi
-        else
-          echo "✅ GO_LATEST is up to date ($CURRENT_VERSION.x)"
-        fi
+          # バージョンを比較
+          if [ "$CURRENT_VERSION" != "$LATEST_MINOR" ]; then
+            echo "::error::GO_LATEST ($CURRENT_VERSION.x) is outdated! Latest stable Go version is $LATEST_MINOR.x"
+            echo "Please update GO_LATEST in .github/workflows/ci.yml to $LATEST_MINOR.x"
+            exit 1
+          fi
+          else
+            echo "✅ GO_LATEST is up to date ($CURRENT_VERSION.x)"
+          fi
 
-    - name: Create issue if version is outdated
-      if: failure() && github.event_name == 'schedule'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const latestVersion = '${{ steps.get-latest.outputs.latest_minor }}';
-          const issueTitle = `Update GO_LATEST to ${latestVersion}.x`;
-          
-          // 既存のissueをチェック
-          const issues = await github.rest.issues.listForRepo({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            state: 'open',
-            labels: 'go-version-update'
-          });
-          
-          const existingIssue = issues.data.find(issue => issue.title === issueTitle);
-          
-          if (!existingIssue) {
-            await github.rest.issues.create({
+      - name: Create issue if version is outdated
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const latestVersion = '${{ steps.get-latest.outputs.latest_minor }}';
+            const issueTitle = `Update GO_LATEST to ${latestVersion}.x`;
+
+            // 既存のissueをチェック
+            const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: issueTitle,
-              body: `A new stable Go version ${latestVersion}.x is available.\n\nPlease update \`GO_LATEST\` in \`.github/workflows/ci.yml\` from the current version to \`${latestVersion}.x\`.\n\nThis will ensure our CI uses the latest stable Go version.`,
-              labels: ['go-version-update', 'maintenance']
+              state: 'open',
+              labels: 'go-version-update'
             });
-          }
+
+            const existingIssue = issues.data.find(issue => issue.title === issueTitle);
+
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: `A new stable Go version ${latestVersion}.x is available.\n\nPlease update \`GO_LATEST\` in \`.github/workflows/ci.yml\` from the current version to \`${latestVersion}.x\`.\n\nThis will ensure our CI uses the latest stable Go version.`,
+                labels: ['go-version-update', 'maintenance']
+              });
+            }
