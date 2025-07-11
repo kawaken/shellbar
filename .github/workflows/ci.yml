@@ -2,9 +2,19 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
+    paths:
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/ci.yml'
   pull_request:
-    branches: [main, develop]
+    branches: [main]
+    paths:
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/ci.yml'
 
 env:
   GO_LATEST: 1.24.x
