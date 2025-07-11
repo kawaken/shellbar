@@ -28,17 +28,22 @@ jobs:
     - name: Check if GO_LATEST is up to date
       run: |
         # ci.ymlからGO_LATESTの値を取得
-        CURRENT_VERSION=$(grep "GO_LATEST:" .github/workflows/ci.yml | awk '{print $2}' | sed 's/\.x$//')
+        CURRENT_VERSION=$(grep -m1 "GO_LATEST:" .github/workflows/ci.yml | awk '{print $2}' | sed 's/\.x$//')
+        if [ -z "$CURRENT_VERSION" ]; then
+          echo "::error::GO_LATEST variable not found in ci.yml"
+          exit 1
+        fi
         echo "Current GO_LATEST: $CURRENT_VERSION"
-        
+
         LATEST_MINOR="${{ steps.get-latest.outputs.latest_minor }}"
         echo "Latest Go minor: $LATEST_MINOR"
-        
+
         # バージョンを比較
         if [ "$CURRENT_VERSION" != "$LATEST_MINOR" ]; then
           echo "::error::GO_LATEST ($CURRENT_VERSION.x) is outdated! Latest stable Go version is $LATEST_MINOR.x"
           echo "Please update GO_LATEST in .github/workflows/ci.yml to $LATEST_MINOR.x"
           exit 1
+        fi
         else
           echo "✅ GO_LATEST is up to date ($CURRENT_VERSION.x)"
         fi
