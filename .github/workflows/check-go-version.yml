@@ -11,7 +11,7 @@ jobs:
   check-latest-go:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
     - name: Get latest stable Go version
       id: get-latest
