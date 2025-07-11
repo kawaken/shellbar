@@ -1,0 +1,48 @@
+name: Delete Merged Branch
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  delete-branch:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Delete merged branch
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const branchName = pr.head.ref;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            
+            // main ブランチは削除しない
+            if (branchName === 'main') {
+              console.log(`Skipping deletion of protected branch: ${branchName}`);
+              return;
+            }
+            
+            // フォークからの PR の場合はスキップ
+            if (pr.head.repo.full_name !== pr.base.repo.full_name) {
+              console.log('PR is from a fork, skipping branch deletion');
+              return;
+            }
+            
+            try {
+              await github.rest.git.deleteRef({
+                owner: owner,
+                repo: repo,
+                ref: `heads/${branchName}`
+              });
+              console.log(`Successfully deleted branch: ${branchName}`);
+            } catch (error) {
+              console.error(`Failed to delete branch ${branchName}:`, error.message);
+              // ブランチが既に削除されている場合はエラーを無視
+              if (error.status !== 422) {
+                throw error;
+              }
+            }
