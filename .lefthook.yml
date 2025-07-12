@@ -1,0 +1,16 @@
+pre-commit:
+  commands:
+    format:
+      glob: "**/*.{yml,yaml,md}"
+      run: mise run fmt
+      stage_fixed: true
+
+pre-push:
+  commands:
+    check-format:
+      run: |
+        if ! mise run check-fmt; then
+          echo "❌ Some files are not formatted. Run 'mise run fmt' to fix."
+          exit 1
+        fi
+        echo "✅ All YAML and Markdown files are properly formatted."

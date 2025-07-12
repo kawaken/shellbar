@@ -77,3 +77,7 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 - Static analysis with staticcheck
 - Security scanning with gosec and govulncheck
 - Coverage threshold monitoring (80% target, not enforced)
+
+## Development Best Practices
+
+- When specifying a Go version, check the go.mod version
