@@ -1,0 +1,64 @@
+name: Design Consistency Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '**/*.go'
+      - 'docs/design/**/*.md'
+
+jobs:
+  design-consistency-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # PR差分のみで十分なので1に変更
+
+      - name: Run Design Consistency Review
+        id: claude-review
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          # 設計ドキュメントとコードの整合性チェックに特化したプロンプト
+          direct_prompt: |
+            このPRについて、コードと設計ドキュメント（docs/design/）に異なる点がないかをレビューしてください。
+
+            ## チェック観点
+
+            コードとドキュメントの間で以下のような相違点がないか確認してください：
+            - 構造体やメソッドの定義が一致しているか
+            - 設定項目やデフォルト値が一致しているか
+            - コマンドライン引数の仕様が一致しているか
+            - ビルトインコマンドの仕様と実装が一致しているか
+
+            ## レビュー方針
+            
+            - **不整合を発見した場合**: 具体的にどこが矛盾しているか指摘し、修正提案をしてください
+            - **実装が先行している場合**: 設計ドキュメントの更新を提案してください  
+            - **設計が先行している場合**: 実装の必要性を確認してください
+            - **新機能追加の場合**: 対応する設計ドキュメントの追加・更新を提案してください
+
+            ## コード修正提案
+
+            不整合を発見した場合は、可能な限りGitHubのコメントで以下の形式で修正提案を作成してください：
+
+            ```suggestion
+            修正後のコード
+            ```
+
+            この形式を使うことで、PR作成者が「Commit suggestion」ボタンで直接修正を適用できます。
+
+            設計ドキュメントとコードの両方が最新で整合性が取れた状態を維持することを目標としています。
+
+          use_sticky_comment: true
+
+          # コード提案を可能にするツール
+          allowed_tools: "Read,Grep"
