@@ -8,8 +8,8 @@ on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - '**/*.go'
-      - 'docs/design/**/*.md'
+      - "**/*.go"
+      - "docs/design/**/*.md"
 
 jobs:
   design-consistency-review:
@@ -21,7 +21,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1  # PR差分のみで十分なので1に変更
+          fetch-depth: 1 # PR差分のみで十分なので1に変更
 
       - name: Run Design Consistency Review
         id: claude-review

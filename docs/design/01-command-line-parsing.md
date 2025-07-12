@@ -7,6 +7,7 @@
 - ひとまず `flag` パッケージで対応
 
 #### 全体構造
+
 ```go
 // main.go
 func main() {
@@ -38,6 +39,7 @@ func (c *Command) Run() error {
 ```
 
 #### Builder的な関数でコマンド作成
+
 ```go
 // 外部コマンド
 func NewExternalCommand(name string, args []string) *Command {

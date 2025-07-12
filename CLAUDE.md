@@ -56,6 +56,7 @@ Shellbar is a CLI tool that displays a persistent status bar at the bottom of th
 ### Configuration
 
 Configuration files are TOML format (`shellbar.toml`) and support:
+
 - Format string for status bar layout
 - Global refresh rate
 - Default command timeout/interval settings
@@ -72,6 +73,7 @@ Example location: `examples/shellbar.toml`
 ## CI/CD
 
 GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
+
 - Multiple Go versions (1.23.x, 1.24.x)
 - Tests with race detection and coverage
 - Static analysis with staticcheck
