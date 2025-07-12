@@ -1,6 +1,6 @@
 {
   "includes": ["**/*.{md,yml,yaml}"],
-  "excludes": [],
+  "excludes": ["vendor/**", "dist/**", "build/**"],
   "plugins": [
     "https://plugins.dprint.dev/markdown-0.17.8.wasm",
     "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm"

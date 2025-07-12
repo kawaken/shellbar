@@ -2,7 +2,10 @@ pre-commit:
   commands:
     format:
       glob: "**/*.{yml,yaml,md}"
-      run: mise run fmt
+      run: |
+        if [ -n "$STAGED_FILES" ]; then
+          mise run fmt -- $STAGED_FILES
+        fi
       stage_fixed: true
 
 pre-push:
