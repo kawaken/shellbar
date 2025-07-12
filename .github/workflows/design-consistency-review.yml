@@ -1,5 +1,9 @@
 name: Design Consistency Review
 
+concurrency:
+  group: design-consistency-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     types: [opened, synchronize]
@@ -38,9 +42,9 @@ jobs:
             - ビルトインコマンドの仕様と実装が一致しているか
 
             ## レビュー方針
-            
+
             - **不整合を発見した場合**: 具体的にどこが矛盾しているか指摘し、修正提案をしてください
-            - **実装が先行している場合**: 設計ドキュメントの更新を提案してください  
+            - **実装が先行している場合**: 設計ドキュメントの更新を提案してください
             - **設計が先行している場合**: 実装の必要性を確認してください
             - **新機能追加の場合**: 対応する設計ドキュメントの追加・更新を提案してください
 
