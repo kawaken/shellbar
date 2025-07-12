@@ -5,6 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Communication
 
 - Responses must be in Japanese in CI/Issues
+
+## Git Practices
+
+- Don't `git add` without specifying a file, like `git add .` or `git add -A`
 - Use `Co-Authored-By` when committing
 
 ## Build and Development Commands
