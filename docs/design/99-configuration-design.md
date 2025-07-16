@@ -50,7 +50,7 @@ timeout = "5s"
 - **format**: ステータスバーの表示フォーマット（変数展開対応）
 - **refresh_rate**: 画面更新の最小間隔
 - **defaults**: 各ステータスのデフォルト値（timeout、interval）
-- **status**: ステータス情報の定義（用語定義は05-status-command-naming.mdを参照）
+- **status**: ステータス情報の定義（用語定義は99-status-command-naming.mdを参照）
 
 ### ビルトインコマンドと設定なし動作
 

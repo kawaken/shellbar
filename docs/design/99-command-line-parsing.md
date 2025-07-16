@@ -32,12 +32,15 @@ func (s *Shellbar) Run() error {
 
 // command.go
 type Command struct {
-    run func() error // 内部コマンドの場合は関数、外部の場合はexec実行
+    run func(ctx context.Context) error // 内部コマンドの場合は関数、外部の場合はexec実行
 }
 
-func (c *Command) Run() error {
-    return c.run()
+func (c *Command) Run(ctx context.Context) error {
+    return c.run(ctx)
 }
+
+// 注: context.Contextを渡すことで、長時間実行されるコマンドのキャンセル、
+// タイムアウト、SIGINT処理などを将来的に実装可能にする
 ```
 
 #### Builder的な関数でコマンド作成
@@ -46,8 +49,8 @@ func (c *Command) Run() error {
 // 外部コマンド
 func NewExternalCommand(name string, args []string) *Command {
     return &Command{
-        run: func() error {
-            cmd := exec.Command(name, args...)
+        run: func(ctx context.Context) error {
+            cmd := exec.CommandContext(ctx, name, args...)
             // PTY制御とかの処理
             return cmd.Run()
         },
