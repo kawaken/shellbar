@@ -1,42 +1,5 @@
 # 設定ファイル設計
 
-## 設定ファイル仕様例
-
-### 基本的な設定例
-
-```toml
-format = "{path} {git_branch} {git_status} | {time}"
-refresh_rate = "500ms"
-
-[defaults]
-interval = "5s"
-timeout = "3s"
-
-# ビルトインコマンドを使用するステータス
-[status.path]
-interval = "5s"
-timeout = "3s"
-
-[status.git_branch]
-interval = "3s"
-timeout = "3s"
-
-[status.time]
-interval = "1s"
-timeout = "1s"
-
-# 外部コマンドを使用するステータス
-[status.git_status]
-command = "git status --porcelain | wc -l"
-interval = "2s"
-timeout = "5s"
-```
-
-### 判定ロジック
-
-- **commandフィールドが存在する場合**: 外部コマンド使用
-- **commandフィールドが存在しない場合**: ビルトインコマンド使用（名前から自動判定）
-
 ## 設定構造の方針
 
 ### 基本構造
@@ -84,6 +47,7 @@ timeout = "5s"
    - 対象: refresh_rate、defaults.timeout、defaults.interval、各status.interval、各status.timeout
    - 理由: 早期エラー発見、設定ミスの防止
    - 手法: time.ParseDurationでの検証
+   - 許可単位: `ns`、`us`（`µs`）、`ms`、`s`、`m`、`h`（time.ParseDurationでサポートされる単位）
 
 2. **フォーマット文字列の整合性**
    - 対象: formatで参照している変数名（{variable_name}形式）
@@ -100,24 +64,6 @@ timeout = "5s"
    - 理由: 環境依存のため設定時では判断できない
    - 対処: エラーをキャッシュして継続実行
 
-## エラーハンドリング戦略
-
-### 設定読み込みエラー
-
-- **ファイル不存在**: デフォルト設定で動作開始
-- **TOML解析エラー**: エラーメッセージ表示後、デフォルト設定で継続
-- **バリデーションエラー**: 具体的なエラーメッセージで停止
-
-### バリデーションエラーの種類
-
-- **時間形式エラー**: 正しいフォーマット例を提示
-- **フォーマット整合性エラー**: 未定義の変数名を具体的に指摘
-- **必須フィールドエラー**: どのステータスのcommandが未定義かを明示
-
-### 実行時エラー
-
-- **コマンド失敗**: エラー内容をキャッシュして表示継続
-- **タイムアウト**: 前回の結果を使用、エラー状態も表示
 
 ## 設定ファイル検索の優先順位
 
@@ -151,3 +97,35 @@ timeout = "5s"
 - 環境依存性を最小限に抑える
 - ユーザーの学習コストを下げる
 - 段階的な設定追加が可能
+
+## 設定ファイル仕様例
+
+### 基本的な設定例
+
+```toml
+format = "{path} {git_branch} {git_status} | {time}"
+refresh_rate = "500ms"
+
+[defaults]
+interval = "5s"
+timeout = "3s"
+
+# ビルトインコマンドを使用するステータス
+[status.path]
+interval = "5s"
+timeout = "3s"
+
+[status.git_branch]
+interval = "3s"
+timeout = "3s"
+
+[status.time]
+interval = "1s"
+timeout = "1s"
+
+# 外部コマンドを使用するステータス
+[status.git_status]
+command = "git status --porcelain | wc -l"
+interval = "2s"
+timeout = "5s"
+```
