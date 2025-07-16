@@ -64,34 +64,3 @@
 4. デフォルト設定での動作
 
 
-## 設定ファイル例
-
-### 基本的な設定例
-
-```toml
-format = "{path} {git_branch} {git_status} | {time}"
-refresh_rate = "500ms"
-
-[defaults]
-interval = "5s"
-timeout = "3s"
-
-# ビルトインコマンドを使用するステータス
-[status.path]
-interval = "5s"
-timeout = "3s"
-
-[status.git_branch]
-interval = "3s"
-timeout = "3s"
-
-[status.time]
-interval = "1s"
-timeout = "1s"
-
-# 外部コマンドを使用するステータス
-[status.git_status]
-command = "git status --porcelain | wc -l"
-interval = "2s"
-timeout = "5s"
-```
