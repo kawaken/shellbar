@@ -42,7 +42,6 @@ jobs:
             echo "::error::GO_LATEST ($CURRENT_VERSION.x) is outdated! Latest stable Go version is $LATEST_MINOR.x"
             echo "Please update GO_LATEST in .github/workflows/ci.yml to $LATEST_MINOR.x"
             exit 1
-          fi
           else
             echo "✅ GO_LATEST is up to date ($CURRENT_VERSION.x)"
           fi
