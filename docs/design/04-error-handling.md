@@ -1,4 +1,4 @@
-# エラーハンドリング設計
+# エラーハンドリング
 
 ## 基本方針
 
@@ -63,13 +63,14 @@ XDG Base Directory仕様に従い、以下の優先順位でログディレク�
 
 ### ログフォーマット
 
-```
-[YYYY-MM-DD HH:MM:SS] [ERROR] [command_name] error_message
+```text
+[YYYY-MM-DD HH:MM:SS] [ERROR] [status_name] error_message
 ```
 
 ### ログ例
 
-```
+```text
 [2025-07-11 15:30:45] [ERROR] [git_branch] failed to read .git/HEAD: permission denied
 [2025-07-11 15:30:46] [ERROR] [path] failed to get working directory: permission denied
 ```
+
