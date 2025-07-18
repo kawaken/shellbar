@@ -15,7 +15,6 @@
 - **defaults**: 各ステータスのデフォルト値（timeout、interval）
 - **status**: ステータス情報の定義
 
-
 ### 設定の適用ルール
 
 - **設定ファイルなし**: ビルトインコマンド + デフォルトフォーマット
@@ -38,7 +37,7 @@
    - 対象: refresh_rate、defaults.timeout、defaults.interval、各status.interval、各status.timeout
    - 手法: time.ParseDurationでの検証
    - 許可単位: `ns`、`us`（`µs`）、`ms`、`s`、`m`、`h`（time.ParseDurationでサポートされる単位）
-   - 対処: 
+   - 対処:
      - ビルトインコマンドの場合、特にエラーにせず、デフォルト値を採用し実行する
      - 外部コマンドの場合、実行せずプレースホルダを表示する
 
@@ -62,5 +61,3 @@
 2. `~/.shellbar.toml` （ホームディレクトリ直下）
 3. `~/.config/shellbar/shellbar.toml` （XDG準拠）
 4. デフォルト設定での動作
-
-

@@ -73,4 +73,3 @@ XDG Base Directory仕様に従い、以下の優先順位でログディレク�
 [2025-07-11 15:30:45] [ERROR] [git_branch] failed to read .git/HEAD: permission denied
 [2025-07-11 15:30:46] [ERROR] [path] failed to get working directory: permission denied
 ```
-
