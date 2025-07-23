@@ -47,7 +47,6 @@ jobs:
             mcp__github_file_ops__update_claude_comment,
             Bash(git add*),Bash(git commit*),Bash(git push*),Bash(git status),Bash(git diff*),
             Bash(git checkout*),Bash(git branch*),Bash(git log*),Bash(git remote*),
-            Bash(gh pr create*),Bash(gh pr list*),Bash(gh pr view*),
             Bash(go mod*),Bash(go test*),Bash(go build*),Bash(go run*),Bash(go get*)
 
           # Use sticky comments to update existing comments instead of creating new ones
@@ -66,11 +65,61 @@ jobs:
           # allowed_tools: "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
 
           # Optional: Add custom instructions for Claude to customize its behavior for your project
-          # custom_instructions: |
-          #   Follow our coding standards
-          #   Ensure all new code has tests
-          #   Use TypeScript for new files
+          custom_instructions: |
+            ## PR作成に関する指示
+            
+            - コミットをプッシュした後は、必ず以下の手順でPRを作成してください：
+              1. `/tmp/pr-request.json` にPR情報を保存（title, body, branch, base）
+              2. 保存完了のメッセージを表示
+            
+            - PR情報のJSONフォーマット例：
+              ```json
+              {
+                "title": "適切なPRタイトル",
+                "body": "## 概要\n変更内容の説明\n\n## 変更点\n- 具体的な変更内容",
+                "branch": "現在のブランチ名",
+                "base": "main"
+              }
+              ```
+            
+            - その他のプロジェクト方針：
+              - Go言語のベストプラクティスに従う
+              - コミットメッセージは日本語で記載
+              - テストが存在する場合は必ず実行
 
           # Optional: Custom environment variables for Claude
-          claude_env: |
-            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # claude_env: |
+          #   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # PR作成要求があった場合の後続処理
+      - name: Check for PR request
+        id: check_pr
+        run: |
+          if [ -f "/tmp/pr-request.json" ]; then
+            echo "pr_requested=true" >> $GITHUB_OUTPUT
+            echo "PR作成要求ファイルが見つかりました"
+          else
+            echo "pr_requested=false" >> $GITHUB_OUTPUT
+            echo "PR作成要求なし"
+          fi
+
+      - name: Create Pull Request
+        if: steps.check_pr.outputs.pr_requested == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # PR情報を読み取り
+          PR_TITLE=$(jq -r '.title' /tmp/pr-request.json)
+          PR_BODY=$(jq -r '.body' /tmp/pr-request.json)
+          PR_BRANCH=$(jq -r '.branch' /tmp/pr-request.json)
+          PR_BASE=$(jq -r '.base' /tmp/pr-request.json)
+          
+          echo "Creating PR: $PR_TITLE"
+          echo "Branch: $PR_BRANCH -> $PR_BASE"
+          
+          # PRを作成
+          gh pr create \
+            --title "$PR_TITLE" \
+            --body "$PR_BODY" \
+            --head "$PR_BRANCH" \
+            --base "$PR_BASE" || echo "PR作成に失敗しました（既に存在する可能性があります）"
