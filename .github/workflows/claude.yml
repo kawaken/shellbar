@@ -106,4 +106,5 @@ jobs:
             --title "$PR_TITLE" \
             --body "$PR_BODY" \
             --head "$PR_BRANCH" \
-            --base "$PR_BASE"
+            --base "$PR_BASE" \
+            --reviewer "kawaken"
