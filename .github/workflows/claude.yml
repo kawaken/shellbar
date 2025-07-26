@@ -52,26 +52,14 @@ jobs:
           # Use sticky comments to update existing comments instead of creating new ones
           use_sticky_comment: true
 
-          # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
-          # model: "claude-opus-4-20250514"
-
-          # Optional: Customize the trigger phrase (default: @claude)
-          # trigger_phrase: "/claude"
-
-          # Optional: Trigger when specific user is assigned to an issue
-          # assignee_trigger: "claude-bot"
-
-          # Optional: Allow Claude to run specific commands
-          # allowed_tools: "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
-
           # Optional: Add custom instructions for Claude to customize its behavior for your project
           custom_instructions: |
             ## PR作成に関する指示
-            
+
             - コミットをプッシュした後は、必ず以下の手順でPRを作成してください：
               1. `/tmp/pr-request.json` にPR情報を保存（title, body, branch, base）
               2. 保存完了のメッセージを表示
-            
+
             - PR情報のJSONフォーマット例：
               ```json
               {
@@ -81,15 +69,11 @@ jobs:
                 "base": "main"
               }
               ```
-            
+
             - その他のプロジェクト方針：
               - Go言語のベストプラクティスに従う
               - コミットメッセージは日本語で記載
               - テストが存在する場合は必ず実行
-
-          # Optional: Custom environment variables for Claude
-          # claude_env: |
-          #   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # PR作成要求があった場合の後続処理
       - name: Check for PR request
@@ -113,13 +97,13 @@ jobs:
           PR_BODY=$(jq -r '.body' /tmp/pr-request.json)
           PR_BRANCH=$(jq -r '.branch' /tmp/pr-request.json)
           PR_BASE=$(jq -r '.base' /tmp/pr-request.json)
-          
+
           echo "Creating PR: $PR_TITLE"
           echo "Branch: $PR_BRANCH -> $PR_BASE"
-          
+
           # PRを作成
           gh pr create \
             --title "$PR_TITLE" \
             --body "$PR_BODY" \
             --head "$PR_BRANCH" \
-            --base "$PR_BASE" || echo "PR作成に失敗しました（既に存在する可能性があります）"
+            --base "$PR_BASE"
